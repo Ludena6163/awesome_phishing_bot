@@ -6,7 +6,7 @@
 awesome_phishing_bot is a controlled, simulation-only platform for cybersecurity professionals, ethical hackers, and red teamers to conduct realistic phishing awareness drills within authorized environments. 
 It integrates social engineering scenarios across multiple communication channels—Telegram, Discord, WhatsApp, and Slack—allowing defenders to test human risk factors safely.
 
-Core Features (Simulated & Consent-Based)
+# Core Features (Simulated & Consent-Based)
 
 Multi‑platform command interface – Authorized users issue commands via Telegram, Discord, WhatsApp, or Slack bots, all logged and auditable.
 
@@ -18,30 +18,44 @@ Analytics dashboard – Tracks click rates, report rates, and user response time
 
 Role‑based access – Only pre‑approved cybersecurity staff can launch drills; all campaigns require written authorization.
 
-Use Cases
+# Use Cases
 
-Cyber drills – Red teams simulate targeted phishing campaigns to test incident response.
+* Cyber drills – Red teams simulate targeted phishing campaigns to test incident response.
 
-Security training – Train employees to recognize and report real phishing attempts using harmless, realistic exercises.
+* Security training – Train employees to recognize and report real phishing attempts using harmless, realistic exercises.
 
-Compliance validation – Demonstrate adherence to frameworks like NIST, ISO 27001, or PCI DSS regarding human risk.
+* Compliance validation – Demonstrate adherence to frameworks like NIST, ISO 27001, or PCI DSS regarding human risk.
 
-Ethical & Legal Guardrails
+# Ethical & Legal Guardrails
 
-No real credential harvesting – The bot never stores passwords, OTPs, or personal data.
+* No real credential harvesting – The bot never stores passwords, OTPs, or personal data.
 
-Logging & consent – Every drill is logged; participants must be notified post‑exercise.
+* Logging & consent – Every drill is logged; participants must be notified post‑exercise.
 
-Platform restrictions – Requires API whitelisting and cannot operate outside approved tenant environments.
+* Platform restrictions – Requires API whitelisting and cannot operate outside approved tenant environments.
 
-Penalty for misuse – Unauthorized use violates terms of service and may constitute illegal hacking.
+* Penalty for misuse – Unauthorized use violates terms of service and may constitute illegal hacking.
 
-Target Audience
+# Target Audience
 
-Corporate security teams
+* Corporate security teams
 
-MSSPs conducting red‑team exercises
+* MSSPs conducting red‑team exercises
 
-Academic cybersecurity programs
+* Academic cybersecurity programs
 
-Government cyber defense units
+* Government cyber defense units
+
+
+
+# How to clone the repo
+```bash
+git clone https://github.com/Accurate-Cyber-Defense/awesome_phishing_bot.git
+cd awesome_phishing_bot.py
+```
+# How to run
+```bash
+python awesome_phishing_bot.py
+```
+
+ 
