@@ -1,407 +1,160 @@
-name: Awesome-Phishing-Bot CI/CD with Conda
+# python-package-conda.yml
+# Conda environment configuration for Awesome-Phishing-Bot v9.5.1
+# Optimized for Alpine Linux container images
 
-on:
-  push:
-    branches: [ main, master, develop ]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-  pull_request:
-    branches: [ main, master ]
-  schedule:
-    - cron: '0 0 * * *'  # Daily security scan at midnight
-  workflow_dispatch:  # Allow manual trigger
+name: awesome-phishing-bot
+channels:
+  - conda-forge
+  - defaults
+  - anaconda
 
-jobs:
-  # Security Scanning Job
-  security-scan:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.10', '3.11']
-    steps:
-    - uses: actions/checkout@v4
+dependencies:
+  # Core Python
+  - python=3.11
+  - pip
+  - setuptools
+  - wheel
+  
+  # Core dependencies
+  - requests>=2.28.0
+  - psutil>=5.9.0
+  - matplotlib>=3.6.0
+  - seaborn>=0.12.0
+  - numpy>=1.23.0
+  - reportlab>=4.0.0
+  
+  # Web & Networking
+  - flask>=2.2.0
+  - aiohttp>=3.8.0
+  - asyncio
+  - websockets>=10.0
+  - paramiko>=2.12.0
+  - cryptography>=39.0.0
+  
+  # Database
+  - sqlite>=3.40
+  
+  # Chat Platforms
+  - python-telegram-bot>=20.0
+  - discord.py>=2.3.0
+  - telethon>=1.28.0
+  - slack-sdk>=3.20.0
+  
+  # Phishing & Security Tools
+  - beautifulsoup4>=4.11.0
+  - lxml>=4.9.0
+  - selenium>=4.8.0
+  - shodan>=1.28.0
+  - pyhunter>=1.3.0
+  
+  # Utility
+  - qrcode>=7.4.0
+  - pyshorteners>=1.0.0
+  - colorama>=0.4.6
+  - tqdm>=4.64.0
+  
+  # Image Processing
+  - pillow>=9.4.0
+  - opencv>=4.7.0
+  
+  # Security
+  - pycryptodome>=3.17.0
+  - bcrypt>=4.0.0
+  
+  # Alpine-specific (via conda-forge)
+  - gcc
+  - gxx
+  - make
+  - cmake
+  - openssl
+  - libffi
+  - libxml2
+  - libxslt
+  - curl
+  - wget
+  - ca-certificates
+  
+  # Optional dependencies
+  - pip:
+    # Core packages not available in conda
+    - python-dotenv>=1.0.0
+    - pyngrok>=6.0.0
+    - cloudscraper>=1.2.71
+    - fake-useragent>=1.4.0
     
-    - name: Setup Miniconda
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        auto-update-conda: true
-        python-version: ${{ matrix.python-version }}
-        environment-file: environment.yml
-        activate-environment: awesome-bot
-        auto-activate-base: false
+    # Extended phishing templates
+    - jinja2>=3.1.0
+    - markdown>=3.4.0
     
-    - name: Install security tools
-      shell: bash -l {0}
-      run: |
-        conda install -c conda-forge bandit safety -y
-        pip install semgrep
+    # Monitoring & logging
+    - python-json-logger>=2.0.0
     
-    - name: Run Bandit security scan
-      shell: bash -l {0}
-      run: |
-        bandit -r . -f json -o bandit-report.json || true
-        bandit -r . -f html -o bandit-report.html || true
+    # Alpine compatibility packages
+    - auditwheel>=5.4.0
+    - musllinux
     
-    - name: Run Safety vulnerability check
-      shell: bash -l {0}
-      run: |
-        safety check --json > safety-report.json || true
-        safety check --full-report > safety-report.txt || true
+    # SSH enhancements
+    - asyncssh>=2.13.0
     
-    - name: Run Semgrep static analysis
-      shell: bash -l {0}
-      run: |
-        semgrep --config auto --json --output semgrep-report.json . || true
-        semgrep --config auto --output semgrep-report.txt . || true
+    # Web scraping
+    - scrapy>=2.8.0
+    - playwright>=1.32.0
     
-    - name: Check for hardcoded secrets
-      shell: bash -l {0}
-      run: |
-        pip install detect-secrets
-        detect-secrets scan --baseline .secrets.baseline
+    # Analytics
+    - pandas>=1.5.0
+    - scikit-learn>=1.2.0
     
-    - name: Upload security reports
-      uses: actions/upload-artifact@v4
-      with:
-        name: security-reports-python${{ matrix.python-version }}
-        path: |
-          *-report.json
-          *-report.html
-          *-report.txt
-      if: always()
+    # PDF Generation
+    - weasyprint>=59.0
+    
+    # QR Code with styling
+    - qrcode-artistic>=1.0.0
+    
+    # URL Shorteners (additional)
+    - bitly-api>=0.1.0
+    - short-url>=1.0.0
+    
+    # Geolocation
+    - geopy>=2.3.0
+    - maxminddb-geolite2>=2021.12
+    
+    # Async support
+    - aiodns>=3.0.0
+    - aiofiles>=23.1.0
+    
+    # System monitoring
+    - gpustat>=1.1.0
+    - netifaces>=0.11.0
+    
+    # Encryption
+    - fernet>=2.0.0
+    
+    # Testing
+    - pytest>=7.2.0
+    - pytest-asyncio>=0.20.0
 
-  # Code Quality Job
-  code-quality:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.10', '3.11']
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Miniconda
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        auto-update-conda: true
-        python-version: ${{ matrix.python-version }}
-        environment-file: environment.yml
-        activate-environment: awesome-bot
-        auto-activate-base: false
-    
-    - name: Install code quality tools
-      shell: bash -l {0}
-      run: |
-        conda install -c conda-forge flake8 pylint black isort mypy radon xenon -y
-    
-    - name: Run Black formatter check
-      shell: bash -l {0}
-      run: |
-        black --check . --diff || true
-    
-    - name: Run isort import sorter check
-      shell: bash -l {0}
-      run: |
-        isort --check-only --diff . || true
-    
-    - name: Run Flake8 linting
-      shell: bash -l {0}
-      run: |
-        flake8 . --count --max-line-length=120 --ignore=E501,W503,E203 --statistics
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-    
-    - name: Run Pylint analysis
-      shell: bash -l {0}
-      run: |
-        pylint *.py --exit-zero --output-format=json > pylint-report.json || true
-        pylint *.py --exit-zero || true
-    
-    - name: Run MyPy type checking
-      shell: bash -l {0}
-      run: |
-        mypy --ignore-missing-imports *.py || true
-    
-    - name: Run Radon complexity analysis
-      shell: bash -l {0}
-      run: |
-        radon cc . -a -s > complexity-report.txt
-        radon mi . -s > maintainability-report.txt
-    
-    - name: Upload code quality reports
-      uses: actions/upload-artifact@v4
-      with:
-        name: code-quality-reports-python${{ matrix.python-version }}
-        path: |
-          *-report.json
-          *-report.txt
-      if: always()
+variables:
+  - PYTHONUNBUFFERED=1
+  - PYTHONDONTWRITEBYTECODE=1
+  - PIP_NO_CACHE_DIR=1
+  - PIP_DISABLE_PIP_VERSION_CHECK=1
 
-  # Testing Job
-  tests:
-    runs-on: ubuntu-latest
-    needs: [code-quality]
-    strategy:
-      matrix:
-        python-version: ['3.9', '3.10', '3.11']
-        include:
-          - python-version: '3.10'
-            coverage: true
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Miniconda
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        auto-update-conda: true
-        python-version: ${{ matrix.python-version }}
-        environment-file: environment.yml
-        activate-environment: awesome-bot
-        auto-activate-base: false
-    
-    - name: Install test dependencies
-      shell: bash -l {0}
-      run: |
-        conda install -c conda-forge pytest pytest-cov pytest-mock pytest-xdist -y
-        pip install pytest-html
-    
-    - name: Run unit tests with coverage
-      shell: bash -l {0}
-      run: |
-        if [ "${{ matrix.coverage }}" = "true" ]; then
-          pytest -v --cov=. --cov-report=xml --cov-report=html --cov-report=term --maxfail=5 --durations=10
-        else
-          pytest -v --maxfail=5 --durations=10
-        fi
-    
-    - name: Upload test reports
-      uses: actions/upload-artifact@v4
-      with:
-        name: test-reports-python${{ matrix.python-version }}
-        path: |
-          coverage.xml
-          htmlcov/
-          pytest_html_report.html
-      if: always()
-    
-    - name: Upload coverage to Codecov
-      if: ${{ matrix.coverage == 'true' && success() }}
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
+# Platform-specific settings
+platforms:
+  - linux-64
+  - linux-aarch64
+  - osx-64
+  - win-64
 
-  # Dependency Check Job
-  dependency-check:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Miniconda
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        auto-update-conda: true
-        python-version: '3.10'
-        environment-file: environment.yml
-        activate-environment: awesome-bot
-        auto-activate-base: false
-    
-    - name: Check for outdated dependencies
-      shell: bash -l {0}
-      run: |
-        conda list --explicit > conda-packages.txt
-        pip list --outdated > outdated-packages.txt
-        conda search --outdated > conda-outdated.txt
-    
-    - name: Run pip-audit for vulnerability scanning
-      shell: bash -l {0}
-      run: |
-        pip install pip-audit
-        pip-audit --requirement <(pip freeze) --format json --output deps-report.json || true
-        pip-audit --requirement <(pip freeze) --format html --output deps-report.html || true
-    
-    - name: Upload dependency reports
-      uses: actions/upload-artifact@v4
-      with:
-        name: dependency-reports
-        path: |
-          conda-packages.txt
-          outdated-packages.txt
-          deps-report.*
-      if: always()
-
-  # Build Job
-  build:
-    runs-on: ubuntu-latest
-    needs: [tests]
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Miniconda
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        auto-update-conda: true
-        python-version: '3.10'
-        environment-file: environment.yml
-        activate-environment: awesome-bot
-        auto-activate-base: false
-    
-    - name: Install build tools
-      shell: bash -l {0}
-      run: |
-        conda install -c conda-forge conda-build conda-verify -y
-        pip install build wheel twine
-    
-    - name: Build Conda package
-      shell: bash -l {0}
-      run: |
-        conda build . --output-folder dist/
-        conda convert --platform all dist/linux-64/*.tar.bz2 -o dist/
-    
-    - name: Build PyPI package
-      shell: bash -l {0}
-      run: |
-        python -m build
-        twine check dist/*
-    
-    - name: Create source distribution
-      shell: bash -l {0}
-      run: |
-        python setup.py sdist bdist_wheel
-        zip -r awesome-phishing-bot-source.zip . -x "*.git*" "__pycache__/*" "*.pyc"
-    
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-artifacts
-        path: |
-          dist/
-          build/
-          *.zip
-      if: always()
-
-  # Docker Build Job
-  docker-build:
-    runs-on: ubuntu-latest
-    needs: [security-scan, tests]
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-    
-    - name: Log in to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Build and push Docker images
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: |
-          ${{ secrets.DOCKER_USERNAME }}/awesome-phishing-bot:latest
-          ${{ secrets.DOCKER_USERNAME }}/awesome-phishing-bot:${{ github.sha }}
-          ghcr.io/${{ github.repository_owner }}/awesome-phishing-bot:latest
-          ghcr.io/${{ github.repository_owner }}/awesome-phishing-bot:${{ github.sha }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-
-  # Release Job
-  release:
-    runs-on: ubuntu-latest
-    needs: [build, docker-build]
-    if: startsWith(github.ref, 'refs/tags/v')
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Download build artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: build-artifacts
-        path: dist/
-    
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: |
-          dist/*.tar.bz2
-          dist/*.whl
-          *.zip
-        generate_release_notes: true
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # Performance Benchmark Job
-  performance:
-    runs-on: ubuntu-latest
-    needs: [tests]
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Miniconda
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        auto-update-conda: true
-        python-version: '3.10'
-        environment-file: environment.yml
-        activate-environment: awesome-bot
-        auto-activate-base: false
-    
-    - name: Install benchmark tools
-      shell: bash -l {0}
-      run: |
-        pip install pytest-benchmark memory-profiler
-    
-    - name: Run performance benchmarks
-      shell: bash -l {0}
-      run: |
-        pytest --benchmark-only --benchmark-json=benchmark-results.json tests/ || echo "No benchmarks found"
-        python -m memory_profiler awesome_phishing_bot.py --help > memory-profile.txt || true
-    
-    - name: Upload benchmark results
-      uses: actions/upload-artifact@v4
-      with:
-        name: performance-reports
-        path: |
-          benchmark-results.json
-          memory-profile.txt
-      if: always()
-
-  # Notification Job
-  notify:
-    runs-on: ubuntu-latest
-    needs: [security-scan, code-quality, tests, build]
-    if: always()
-    steps:
-    - name: Send Slack notification
-      uses: act10ns/slack@v2
-      with:
-        status: ${{ job.status }}
-        channel: '#ci-cd'
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      if: env.SLACK_WEBHOOK_URL != ''
-    
-    - name: Send Discord notification
-      uses: sarisia/actions-status-discord@v1
-      with:
-        webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        title: "Awesome-Phishing-Bot CI/CD Pipeline"
-        description: "Pipeline ${{ job.status }} for ${{ github.repository }}"
-        color: ${{ job.status == 'success' && 0x00ff00 || 0xff0000 }}
-      if: env.DISCORD_WEBHOOK_URL != ''
+# Additional metadata
+about:
+  summary: "🌿 AWESOME-PHISHING-BOT v9.5.1 - Ultimate Phishing & Remote Access Bot"
+  description: |
+    Advanced phishing framework with multi-platform bot support including Telegram,
+    Discord, WhatsApp, Slack, iMessage, and Google Chat. Features SSH remote access,
+    traffic generation, security scanning, Shodan/Hunter.io integration, and
+    comprehensive reporting.
+  license: MIT
+  license_file: LICENSE
+  homepage: https://github.com/awesome-phishing-bot
+  documentation: https://docs.awesome-phishing-bot.com
